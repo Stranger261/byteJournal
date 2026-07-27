@@ -1,0 +1,54 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B"/>
+      <stop offset="55%" stop-color="#3730A3"/>
+      <stop offset="100%" stop-color="#6D28D9"/>
+    </linearGradient>
+    <linearGradient id="byteGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#67E8F9"/>
+      <stop offset="100%" stop-color="#22D3EE"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="#818CF8" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#818CF8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- App icon canvas -->
+  <rect width="512" height="512" rx="120" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="120" fill="url(#glow)"/>
+
+  <!-- Signature mark: an open journal, with a "byte" bookmark ribbon
+       of 8 bits hanging out of it, tucked between the pages: literally
+       a byte marking your place in the journal. -->
+
+  <!-- open journal: two pages meeting at a center spine -->
+  <path d="M256 168 L152 190 V354 L256 336 Z" fill="#F8FAFC" opacity="0.95"/>
+  <path d="M256 168 L360 190 V354 L256 336 Z" fill="#F8FAFC" opacity="0.8"/>
+
+  <!-- page text lines -->
+  <rect x="176" y="228" width="60" height="10" rx="5" fill="#94A3B8"/>
+  <rect x="176" y="252" width="46" height="10" rx="5" fill="#CBD5E1"/>
+  <rect x="176" y="276" width="54" height="10" rx="5" fill="#CBD5E1"/>
+
+  <rect x="276" y="228" width="60" height="10" rx="5" fill="#94A3B8"/>
+  <rect x="276" y="252" width="60" height="10" rx="5" fill="#CBD5E1"/>
+  <rect x="276" y="276" width="40" height="10" rx="5" fill="#CBD5E1"/>
+
+  <!-- spine crease -->
+  <line x1="256" y1="168" x2="256" y2="336" stroke="#94A3B8" stroke-width="3" opacity="0.6"/>
+
+  <!-- byte bookmark: 8 bits (a full byte) as a ribbon dropping from the
+       top of the spine, the app's signature detail -->
+  <path d="M238 130 H274 V366 L256 350 L238 366 Z" fill="url(#byteGrad)"/>
+  <g fill="#0F172A" font-family="Menlo, Consolas, monospace" font-size="16" font-weight="700">
+    <text x="256" y="150" text-anchor="middle">0</text>
+    <text x="256" y="172" text-anchor="middle">1</text>
+    <text x="256" y="194" text-anchor="middle">1</text>
+    <text x="256" y="216" text-anchor="middle">0</text>
+  </g>
+
+  <!-- accent dot, cursor / "current entry" marker -->
+  <circle cx="360" cy="192" r="12" fill="#FBBF24"/>
+</svg>
