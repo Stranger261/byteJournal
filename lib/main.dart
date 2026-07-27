@@ -14,9 +14,6 @@ void main() async {
   const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
   const supabaseKey = String.fromEnvironment('SUPABASE_PUBKEY');
 
-  print("SUPABASE URL: $supabaseUrl");
-  print("SUPABASE KEY LENGTH: ${supabaseKey.length}");
-
   await Supabase.initialize(url: supabaseUrl, publishableKey: supabaseKey);
 
   Supabase.instance.client.auth.onAuthStateChange.listen((data) {
