@@ -37,7 +37,6 @@ dependencies:
   supabase_flutter: ^2.16.0
   google_fonts: ^6.3.3
   font_awesome_flutter: ^11.0.0
-  flutter_dotenv: ^6.0.1
   flutter_svg: ^2.3.0
   google_sign_in: ^7.2.0
   provider: ^6.1.5+1
@@ -69,7 +68,6 @@ flutter:
 
   assets:
     - assets/icons/
-    - .env
 
   # To add assets to your application, add an assets section, like this:
   # assets:

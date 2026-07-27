@@ -4,15 +4,12 @@ import 'package:blog_app/core/theme/app_theme.dart';
 import 'package:blog_app/core/theme/theme_controller.dart';
 import 'package:blog_app/features/auth/screens/controllers/auth_controller.dart';
 import 'package:blog_app/features/notifications/providers/notifications_provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await dotenv.load(fileName: ".env");
 
   const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
   const supabaseKey = String.fromEnvironment('SUPABASE_PUBKEY');
