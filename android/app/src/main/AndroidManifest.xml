@@ -30,7 +30,7 @@
 
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-
+     
                 <data
                     android:scheme="io.supabase.devlog"
                     android:host="login-callback"/>

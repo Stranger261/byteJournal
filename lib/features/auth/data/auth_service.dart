@@ -1,8 +1,23 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
   final SupabaseClient _supabase = Supabase.instance.client;
+
+  // Web build's deployed URL — update if your Vercel URL changes
+  // (e.g. after setting up a custom domain).
+  static const String _webRedirectBase = 'https://web-ruby-one-95.vercel.app';
+
+  static const String _mobileLoginCallback =
+      'io.supabase.devlog://login-callback';
+  static const String _mobileResetCallback =
+      'io.supabase.devlog://reset-callback';
+
+  String get _loginRedirect => kIsWeb ? _webRedirectBase : _mobileLoginCallback;
+
+  String get _resetRedirect =>
+      kIsWeb ? '$_webRedirectBase/reset-password' : _mobileResetCallback;
 
   // sign in with email and pass
   Future<AuthResponse> signInWithEmailAndPassword(
@@ -49,11 +64,14 @@ class AuthService {
   }
 
   Future<void> signInWithGoogle() async {
-    debugPrint('OAUTH: signInWithGoogle called');
+    debugPrint('OAUTH: signInWithGoogle called, redirectTo=$_loginRedirect');
     try {
-      final result = await Supabase.instance.client.auth.signInWithOAuth(
+      final result = await _supabase.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'io.supabase.devlog://login-callback',
+        redirectTo: _loginRedirect,
+        authScreenLaunchMode: kIsWeb
+            ? LaunchMode.platformDefault
+            : LaunchMode.externalApplication,
       );
       debugPrint('OAUTH: signInWithOAuth returned: $result');
     } catch (e, stack) {
@@ -64,17 +82,27 @@ class AuthService {
   }
 
   Future<void> signInWithGithub() async {
-    await Supabase.instance.client.auth.signInWithOAuth(
-      OAuthProvider.github,
-      redirectTo: 'io.supabase.devlog://login-callback',
-      authScreenLaunchMode: LaunchMode.externalApplication,
-    );
+    debugPrint('OAUTH: signInWithGithub called, redirectTo=$_loginRedirect');
+    try {
+      final result = await _supabase.auth.signInWithOAuth(
+        OAuthProvider.github,
+        redirectTo: _loginRedirect,
+        authScreenLaunchMode: kIsWeb
+            ? LaunchMode.platformDefault
+            : LaunchMode.externalApplication,
+      );
+      debugPrint('OAUTH: signInWithGithub returned: $result');
+    } catch (e, stack) {
+      debugPrint('OAUTH: signInWithGithub threw: $e');
+      debugPrint('OAUTH: stack: $stack');
+      rethrow;
+    }
   }
 
   Future<void> sendPasswordResetEmail(String email) async {
     await _supabase.auth.resetPasswordForEmail(
       email,
-      redirectTo: 'io.supabase.devlog://reset-callback',
+      redirectTo: _resetRedirect,
     );
   }
 
