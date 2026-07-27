@@ -17,17 +17,17 @@ class AppRoutes {
   static const feed = '/';
   static const auth = '/auth';
   static const authOtp = '/auth/otop';
-  static const postDetail = '/posts/:id';
+  static const postDetail = '/post/:id';
   static const createPost = '/posts/create';
-  static const editPost = '/posts/:id/edit';
+  static const editPost = '/post/:id/edit';
   static const profile = '/profile';
   static const myPostsShare = '/profile/my-posts';
   static const imageViewer = '/image-viewer';
   static const resetPassword = '/reset-password';
   static const notifications = '/notifications';
 
-  static String postDetailPath(String id) => '/posts/$id';
-  static String editPostPath(String id) => '/posts/$id/edit';
+  static String postDetailPath(String id) => '/post/$id';
+  static String editPostPath(String id) => '/post/$id/edit';
 }
 
 final GoRouter appRouter = GoRouter(
