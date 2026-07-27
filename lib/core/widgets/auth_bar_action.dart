@@ -1,7 +1,6 @@
 import 'package:blog_app/core/router/app_router.dart';
 import 'package:blog_app/core/theme/app_theme.dart';
 import 'package:blog_app/features/auth/screens/controllers/auth_controller.dart';
-import 'package:blog_app/features/auth/screens/pages/auth_screen.dart';
 import 'package:blog_app/features/profile/screens/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

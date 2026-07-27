@@ -14,12 +14,8 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
 
-  final supabaseUrl = dotenv.env['SUPABASE_URL'];
-  final supabaseKey = dotenv.env['SUPABASE_PUBKEY'];
-
-  if (supabaseUrl == null || supabaseKey == null) {
-    throw Exception('Missing Supabase environment variables.');
-  }
+  const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  const supabaseKey = String.fromEnvironment('SUPABASE_PUBKEY');
 
   await Supabase.initialize(url: supabaseUrl, publishableKey: supabaseKey);
 
