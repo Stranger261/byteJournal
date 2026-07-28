@@ -118,6 +118,7 @@ class _PostDetailViewState extends State<_PostDetailView> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('POST DETAIL BUILD: ${GoRouterState.of(context).uri}');
     final c = Theme.of(context).extension<DevlogColors>()!;
     final provider = context.watch<PostDetailProvider>();
     final commentsProvider = context.watch<CommentsProvider>();

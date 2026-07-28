@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class AppRoutes {
-  static const feed = '/';
+  static const feed = '/posts';
   static const auth = '/auth';
   static const authOtp = '/auth/otop';
   static const postDetail = '/post/:id';
