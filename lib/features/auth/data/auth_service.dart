@@ -1,12 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  // Web build's deployed URL — update if your Vercel URL changes
-  // (e.g. after setting up a custom domain).
   static const String _webRedirectBase = 'https://web-ruby-one-95.vercel.app';
 
   static const String _mobileLoginCallback =
@@ -64,39 +61,23 @@ class AuthService {
   }
 
   Future<void> signInWithGoogle() async {
-    debugPrint('OAUTH: signInWithGoogle called, redirectTo=$_loginRedirect');
-    try {
-      final result = await _supabase.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: _loginRedirect,
-        authScreenLaunchMode: kIsWeb
-            ? LaunchMode.platformDefault
-            : LaunchMode.externalApplication,
-      );
-      debugPrint('OAUTH: signInWithOAuth returned: $result');
-    } catch (e, stack) {
-      debugPrint('OAUTH: signInWithOAuth threw: $e');
-      debugPrint('OAUTH: stack: $stack');
-      rethrow;
-    }
+    await _supabase.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: _loginRedirect,
+      authScreenLaunchMode: kIsWeb
+          ? LaunchMode.platformDefault
+          : LaunchMode.externalApplication,
+    );
   }
 
   Future<void> signInWithGithub() async {
-    debugPrint('OAUTH: signInWithGithub called, redirectTo=$_loginRedirect');
-    try {
-      final result = await _supabase.auth.signInWithOAuth(
-        OAuthProvider.github,
-        redirectTo: _loginRedirect,
-        authScreenLaunchMode: kIsWeb
-            ? LaunchMode.platformDefault
-            : LaunchMode.externalApplication,
-      );
-      debugPrint('OAUTH: signInWithGithub returned: $result');
-    } catch (e, stack) {
-      debugPrint('OAUTH: signInWithGithub threw: $e');
-      debugPrint('OAUTH: stack: $stack');
-      rethrow;
-    }
+    await _supabase.auth.signInWithOAuth(
+      OAuthProvider.github,
+      redirectTo: _loginRedirect,
+      authScreenLaunchMode: kIsWeb
+          ? LaunchMode.platformDefault
+          : LaunchMode.externalApplication,
+    );
   }
 
   Future<void> sendPasswordResetEmail(String email) async {

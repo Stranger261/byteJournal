@@ -203,6 +203,15 @@ class NotificationsProvider extends ChangeNotifier {
     }
   }
 
+  void clear() {
+    _notifications.clear();
+    _unreadCount = 0;
+    _page = 0;
+    _hasMore = true;
+    _error = null;
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     unsubscribeFromRealtime();

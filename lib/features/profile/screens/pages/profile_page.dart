@@ -17,7 +17,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userId = Supabase.instance.client.auth.currentUser!.id;
+    final userId = Supabase.instance.client.auth.currentUser?.id ?? '';
     return ChangeNotifierProvider(
       create: (_) => ProfileProvider()..load(userId),
       child: const _ProfileView(),

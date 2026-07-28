@@ -1,29 +1,49 @@
 import 'package:blog_app/core/router/app_router.dart';
 import 'package:blog_app/core/services/post_sync_service.dart';
+import 'package:blog_app/core/services/push_notification_service.dart';
 import 'package:blog_app/core/theme/app_theme.dart';
 import 'package:blog_app/core/theme/theme_controller.dart';
 import 'package:blog_app/features/auth/screens/controllers/auth_controller.dart';
 import 'package:blog_app/features/notifications/providers/notifications_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  setUrlStrategy(PathUrlStrategy());
-  GoRouter.optionURLReflectsImperativeAPIs = true;
+  usePathUrlStrategy();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
   const supabaseKey = String.fromEnvironment('SUPABASE_PUBKEY');
 
   await Supabase.initialize(url: supabaseUrl, publishableKey: supabaseKey);
 
+  final notificationsProvider = NotificationsProvider();
+  final pushNotificationService = PushNotificationService();
+
   Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-    if (data.event == AuthChangeEvent.passwordRecovery) {
-      appRouter.go(AppRoutes.resetPassword);
+    switch (data.event) {
+      case AuthChangeEvent.passwordRecovery:
+        appRouter.go(AppRoutes.resetPassword);
+        break;
+      case AuthChangeEvent.signedIn:
+        notificationsProvider
+          ..loadInitial()
+          ..subscribeToRealtime();
+        pushNotificationService.initialize();
+        break;
+      case AuthChangeEvent.signedOut:
+        notificationsProvider.unsubscribeFromRealtime();
+        notificationsProvider.clear();
+        break;
+      default:
+        break;
     }
   });
 
@@ -33,11 +53,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider(create: (_) => ThemeController()),
         ChangeNotifierProvider(create: (_) => PostSyncService()),
-        ChangeNotifierProvider(
-          create: (_) => NotificationsProvider()
-            ..loadInitial()
-            ..subscribeToRealtime(),
-        ),
+        ChangeNotifierProvider.value(value: notificationsProvider),
       ],
       child: const ByteJorunalApp(),
     ),
@@ -56,14 +72,10 @@ class ByteJorunalApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'byteJournal',
       debugShowCheckedModeBanner: false,
-
       themeMode: themeController.mode,
-
       themeAnimationDuration: const Duration(milliseconds: 300),
       themeAnimationCurve: Curves.easeInOut,
-
       theme: buildDevlogTheme(DevlogColors.light, Brightness.light),
-
       darkTheme: buildDevlogTheme(DevlogColors.dark, Brightness.dark),
       routerConfig: appRouter,
     );

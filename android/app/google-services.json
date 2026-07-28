@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "247086611179",
+    "project_id": "bytejournal-32df8",
+    "storage_bucket": "bytejournal-32df8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:247086611179:android:b456be4994b9c69d899cae",
+        "android_client_info": {
+          "package_name": "com.example.blog_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEzLdiK9IPLiVP1SPi-Qoi4nrk4LHHi7A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
