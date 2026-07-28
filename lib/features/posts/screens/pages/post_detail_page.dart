@@ -2,6 +2,7 @@ import 'package:blog_app/core/router/app_router.dart';
 import 'package:blog_app/core/services/post_sync_service.dart';
 import 'package:blog_app/core/theme/app_theme.dart';
 import 'package:blog_app/core/utils/auth_guard.dart';
+import 'package:blog_app/core/widgets/back_to_homescreen_button.dart';
 import 'package:blog_app/features/posts/data/post_model.dart';
 import 'package:blog_app/features/posts/providers/comments_provider.dart';
 import 'package:blog_app/features/posts/providers/post_detail_provider.dart';
@@ -127,12 +128,10 @@ class _PostDetailViewState extends State<_PostDetailView> {
     return Scaffold(
       backgroundColor: c.bg,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: c.bg,
         title: const Text('Post'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(provider.post),
-        ),
+        leading: BackToHomeButton(),
       ),
       body: Builder(
         builder: (context) {

@@ -1,5 +1,6 @@
 import 'package:blog_app/core/services/post_sync_service.dart';
 import 'package:blog_app/core/theme/app_theme.dart';
+import 'package:blog_app/core/widgets/back_to_profilescreen_button.dart';
 import 'package:blog_app/features/posts/providers/my_posts_provider.dart';
 import 'package:blog_app/features/posts/providers/my_shares_provider.dart';
 import 'package:blog_app/features/posts/screens/widgets/my_posts_tab.dart';
@@ -66,6 +67,8 @@ class _MyPostsSharesViewState extends State<_MyPostsSharesView>
       appBar: AppBar(
         backgroundColor: c.bg,
         title: const Text('My Activity'),
+        automaticallyImplyLeading: false,
+        leading: BackToProfilescreenButton(),
         bottom: TabBar(
           controller: _tabController,
           labelColor: c.accent,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:blog_app/core/widgets/image_view_page.dart';
 import 'package:blog_app/features/auth/screens/pages/auth_screen.dart';
 import 'package:blog_app/features/auth/screens/pages/otp_screen.dart';
@@ -12,6 +14,25 @@ import 'package:blog_app/features/posts/screens/pages/update_post_page.dart';
 import 'package:blog_app/features/profile/screens/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+/// Bridges a Stream (Supabase auth state changes) into a Listenable so
+/// GoRouter's `redirect` re-runs whenever auth state changes, not just
+/// on navigation events.
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
 
 class AppRoutes {
   static const feed = '/posts';
@@ -32,6 +53,35 @@ class AppRoutes {
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.feed,
+  refreshListenable: GoRouterRefreshStream(
+    Supabase.instance.client.auth.onAuthStateChange,
+  ),
+  redirect: (context, state) {
+    final isLoggedIn = Supabase.instance.client.auth.currentSession != null;
+
+    final isGoingToAuth =
+        state.matchedLocation == AppRoutes.auth ||
+        state.matchedLocation == AppRoutes.authOtp ||
+        state.matchedLocation == AppRoutes.resetPassword;
+
+    // state.fullPath is the route *template* (e.g. '/post/:id'),
+    // not the resolved path (e.g. '/post/123') — needed for dynamic routes.
+    final isPublicPage =
+        state.fullPath == AppRoutes.feed ||
+        state.fullPath == AppRoutes.postDetail;
+
+    // Not logged in and trying to reach a protected page -> send to /auth
+    if (!isLoggedIn && !isGoingToAuth && !isPublicPage) {
+      return AppRoutes.auth;
+    }
+
+    // Already logged in but sitting on the auth screen -> send to feed
+    if (isLoggedIn && isGoingToAuth) {
+      return AppRoutes.feed;
+    }
+
+    return null; // no redirect needed
+  },
   routes: [
     GoRoute(
       path: AppRoutes.feed,

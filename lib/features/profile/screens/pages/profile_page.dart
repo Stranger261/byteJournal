@@ -1,5 +1,6 @@
 import 'package:blog_app/core/router/app_router.dart';
 import 'package:blog_app/core/theme/app_theme.dart';
+import 'package:blog_app/core/widgets/back_to_homescreen_button.dart';
 import 'package:blog_app/core/widgets/loading_submit_button.dart';
 import 'package:blog_app/features/profile/providers/profile_provider.dart';
 import 'package:blog_app/features/profile/screens/widgets/profile_action_tiles.dart';
@@ -74,7 +75,12 @@ class _ProfileView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(backgroundColor: c.bg, title: const Text('Profile')),
+      appBar: AppBar(
+        backgroundColor: c.bg,
+        title: const Text('Profile'),
+        automaticallyImplyLeading: false,
+        leading: BackToHomeButton(),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),

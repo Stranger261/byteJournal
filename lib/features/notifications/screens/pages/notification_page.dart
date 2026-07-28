@@ -1,6 +1,7 @@
 // features/notifications/screens/pages/notifications_page.dart
 import 'package:blog_app/core/router/app_router.dart';
 import 'package:blog_app/core/theme/app_theme.dart';
+import 'package:blog_app/core/widgets/back_to_homescreen_button.dart';
 import 'package:blog_app/features/notifications/providers/notifications_provider.dart';
 import 'package:blog_app/features/notifications/screens/widgets/notification_tile.dart';
 import 'package:flutter/material.dart';
@@ -42,8 +43,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return Scaffold(
       backgroundColor: c.bg,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: c.bg,
         title: const Text('Notifications'),
+        leading: BackToHomeButton(),
         actions: [
           if (provider.unreadCount > 0)
             TextButton(

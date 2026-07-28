@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:blog_app/core/theme/app_theme.dart';
 import 'package:blog_app/core/utils/toast.dart';
+import 'package:blog_app/core/widgets/back_to_homescreen_button.dart';
 import 'package:blog_app/core/widgets/loading_submit_button.dart';
 import 'package:blog_app/features/posts/providers/create_post_provider.dart';
 import 'package:blog_app/features/posts/screens/widgets/add_image_tile.dart';
@@ -70,7 +71,12 @@ class _CreatePostViewState extends State<_CreatePostView> {
 
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(backgroundColor: c.bg, title: const Text('New Post')),
+      appBar: AppBar(
+        backgroundColor: c.bg,
+        title: const Text('New Post'),
+        automaticallyImplyLeading: false,
+        leading: BackToHomeButton(),
+      ),
       body: SafeArea(
         child: Column(
           children: [

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:blog_app/core/theme/app_theme.dart';
 import 'package:blog_app/core/utils/toast.dart';
+import 'package:blog_app/core/widgets/back_to_homescreen_button.dart';
 import 'package:blog_app/core/widgets/loading_submit_button.dart';
 import 'package:blog_app/features/posts/data/post_model.dart';
 import 'package:blog_app/features/posts/providers/update_post_provider.dart';
@@ -59,7 +60,12 @@ class _UpdatePostView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(backgroundColor: c.bg, title: const Text('Edit post')),
+      appBar: AppBar(
+        backgroundColor: c.bg,
+        title: const Text('Edit post'),
+        automaticallyImplyLeading: false,
+        leading: BackToHomeButton(),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
