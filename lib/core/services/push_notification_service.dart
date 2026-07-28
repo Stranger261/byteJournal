@@ -2,6 +2,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+// Must be a TOP-LEVEL function (outside the class) — Firebase calls this
+// in a separate isolate when the app is fully terminated.
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  debugPrint('PUSH: background message: ${message.messageId}');
+}
+
 class PushNotificationService {
   final _messaging = FirebaseMessaging.instance;
   final _supabase = Supabase.instance.client;
@@ -22,10 +29,24 @@ class PushNotificationService {
 
     await _registerToken();
 
-    // FCM tokens can rotate — listen for refresh and re-save.
     _messaging.onTokenRefresh.listen((newToken) {
       debugPrint('PUSH: token refreshed');
       _saveToken(newToken);
+    });
+
+    // Foreground — app open, FCM won't auto-show a system tray notification,
+    // so this is where you'd trigger a local notification if you want one
+    // visible while the app is in use.
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      debugPrint('PUSH: foreground message: ${message.notification?.title}');
+      // TODO: show a local notification manually (flutter_local_notifications)
+    });
+
+    // User tapped a notification while app was backgrounded, bringing it
+    // to foreground.
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      debugPrint('PUSH: opened from background: ${message.data}');
+      // TODO: navigate to the relevant post using message.data['post_id']
     });
   }
 
@@ -57,7 +78,6 @@ class PushNotificationService {
     }
   }
 
-  /// Call this on logout to stop associating this device with the user.
   Future<void> removeCurrentToken() async {
     final token = await _messaging.getToken();
     if (token == null) return;

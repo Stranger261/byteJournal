@@ -6,6 +6,7 @@ import 'package:blog_app/core/theme/theme_controller.dart';
 import 'package:blog_app/features/auth/screens/controllers/auth_controller.dart';
 import 'package:blog_app/features/notifications/providers/notifications_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,10 @@ void main() async {
   usePathUrlStrategy();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Must be registered before runApp — handles pushes received while the
+  // app is fully terminated.
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
   const supabaseKey = String.fromEnvironment('SUPABASE_PUBKEY');
@@ -41,6 +46,7 @@ void main() async {
       case AuthChangeEvent.signedOut:
         notificationsProvider.unsubscribeFromRealtime();
         notificationsProvider.clear();
+        pushNotificationService.removeCurrentToken();
         break;
       default:
         break;
@@ -72,10 +78,14 @@ class ByteJorunalApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'byteJournal',
       debugShowCheckedModeBanner: false,
+
       themeMode: themeController.mode,
+
       themeAnimationDuration: const Duration(milliseconds: 300),
       themeAnimationCurve: Curves.easeInOut,
+
       theme: buildDevlogTheme(DevlogColors.light, Brightness.light),
+
       darkTheme: buildDevlogTheme(DevlogColors.dark, Brightness.dark),
       routerConfig: appRouter,
     );
