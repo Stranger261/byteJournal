@@ -44,7 +44,6 @@ class PostDetailProvider extends ChangeNotifier {
     try {
       _post = await _postService.getPost(postId);
     } catch (e) {
-      debugPrint('Failed to load post: $e');
       _postError = e.toString();
     } finally {
       _isLoadingPost = false;
@@ -117,7 +116,6 @@ class PostDetailProvider extends ChangeNotifier {
       }
       if (_post != null) _syncService.notifyPostUpdated(_post!);
     } catch (e) {
-      debugPrint('Toggle share failed: $e');
       try {
         final actuallyShared = await _shareService.isPostSharedByCurrentUser(
           postId,
@@ -147,7 +145,6 @@ class PostDetailProvider extends ChangeNotifier {
       _syncService.notifyPostDeleted(_post!.id);
       return true;
     } catch (e) {
-      debugPrint('Failed to delete post: $e');
       return false;
     }
   }

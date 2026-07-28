@@ -152,7 +152,6 @@ class MyPostsProvider extends ChangeNotifier {
         await _shareService.sharePost(postId);
       }
     } catch (e) {
-      debugPrint('Toggle share failed: $e');
       final revertIndex = _posts.indexWhere((p) => p.id == postId);
       if (revertIndex != -1) {
         _posts[revertIndex] = original;
