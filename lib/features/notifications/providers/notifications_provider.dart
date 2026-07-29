@@ -163,7 +163,32 @@ class NotificationsProvider extends ChangeNotifier {
           ),
           callback: (payload) => _handleUpdate(payload.newRecord),
         )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.delete,
+          schema: 'public',
+          table: 'notifications',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'recipient_id',
+            value: userId,
+          ),
+          callback: (payload) => _handleDelete(payload.oldRecord),
+        )
         .subscribe();
+  }
+
+  void _handleDelete(Map<String, dynamic> row) {
+    final id = row['id'] as String?;
+    if (id == null) return;
+
+    final index = _notifications.indexWhere((n) => n.id == id);
+    if (index == -1) return;
+
+    final wasUnread = !_notifications[index].isRead;
+    _notifications.removeAt(index);
+    if (wasUnread && _unreadCount > 0) _unreadCount--;
+
+    notifyListeners();
   }
 
   Future<void> _handleInsert(Map<String, dynamic> row) async {
