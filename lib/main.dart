@@ -38,6 +38,7 @@ void main() async {
         appRouter.go(AppRoutes.resetPassword);
         break;
       case AuthChangeEvent.signedIn:
+      case AuthChangeEvent.initialSession:
         notificationsProvider
           ..loadInitial()
           ..subscribeToRealtime();
