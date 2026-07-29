@@ -19,29 +19,20 @@ class NotificationService {
 
     if (recipientId == actorId) return; // don't notify yourself
 
-    // For toggleable interactions (like/share), only ever keep ONE active
-    // notification per actor+post+type combination — never stack duplicates.
-    if (type == 'like' || type == 'share') {
-      final existing = await _client
-          .from('notifications')
-          .select('id')
-          .eq('recipient_id', recipientId)
-          .eq('actor_id', actorId)
-          .eq('post_id', postId)
-          .eq('type', type)
-          .maybeSingle();
-
-      if (existing != null)
-        return; // already have an active one, don't duplicate
+    try {
+      await _client.from('notifications').insert({
+        'recipient_id': recipientId,
+        'actor_id': actorId,
+        'type': type,
+        'post_id': postId,
+        'comment_id': commentId,
+      });
+    } on PostgrestException catch (e) {
+      if (e.code == '23505') {
+        return;
+      }
+      rethrow;
     }
-
-    await _client.from('notifications').insert({
-      'recipient_id': recipientId,
-      'actor_id': actorId,
-      'type': type,
-      'post_id': postId,
-      'comment_id': commentId,
-    });
   }
 
   /// Call this when the actor UNDOES a toggleable interaction (unlike/unshare).
