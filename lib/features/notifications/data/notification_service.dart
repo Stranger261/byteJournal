@@ -19,6 +19,20 @@ class NotificationService {
 
     if (recipientId == actorId) return; // don't notify yourself
 
+    if (type == 'like') {
+      final existing = await _client
+          .from('notifications')
+          .select('id')
+          .eq('recipient_id', recipientId)
+          .eq('actor_id', actorId)
+          .eq('post_id', postId)
+          .eq('type', 'like')
+          .maybeSingle();
+
+      if (existing != null)
+        return; // already notified for this like relationship
+    }
+
     await _client.from('notifications').insert({
       'recipient_id': recipientId,
       'actor_id': actorId,

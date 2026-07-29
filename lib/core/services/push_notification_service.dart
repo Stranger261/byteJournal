@@ -1,9 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-// Must be a TOP-LEVEL function (outside the class) — Firebase calls this
-// in a separate isolate when the app is fully terminated.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint('PUSH: background message: ${message.messageId}');
@@ -12,8 +11,14 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 class PushNotificationService {
   final _messaging = FirebaseMessaging.instance;
   final _supabase = Supabase.instance.client;
+  final _localNotifications = FlutterLocalNotificationsPlugin();
+
+  static const _channelId = 'high_importance_channel';
+  static const _channelName = 'Important Notifications';
 
   Future<void> initialize() async {
+    await _initLocalNotifications();
+
     final settings = await _messaging.requestPermission(
       alert: true,
       badge: true,
@@ -34,20 +39,50 @@ class PushNotificationService {
       _saveToken(newToken);
     });
 
-    // Foreground — app open, FCM won't auto-show a system tray notification,
-    // so this is where you'd trigger a local notification if you want one
-    // visible while the app is in use.
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('PUSH: foreground message: ${message.notification?.title}');
-      // TODO: show a local notification manually (flutter_local_notifications)
+      _showLocalNotification(message);
     });
 
-    // User tapped a notification while app was backgrounded, bringing it
-    // to foreground.
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       debugPrint('PUSH: opened from background: ${message.data}');
       // TODO: navigate to the relevant post using message.data['post_id']
     });
+  }
+
+  Future<void> _initLocalNotifications() async {
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initSettings = InitializationSettings(android: androidSettings);
+    await _localNotifications.initialize(initSettings);
+
+    const channel = AndroidNotificationChannel(
+      _channelId,
+      _channelName,
+      importance: Importance.high,
+    );
+    await _localNotifications
+        .resolvePlatformSpecificImplementation
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+  }
+
+  Future<void> _showLocalNotification(RemoteMessage message) async {
+    final notification = message.notification;
+    if (notification == null) return;
+
+    await _localNotifications.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          _channelId,
+          _channelName,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+      ),
+    );
   }
 
   Future<void> _registerToken() async {
