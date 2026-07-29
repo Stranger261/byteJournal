@@ -44,6 +44,12 @@ class ShareService {
     if ((result as List).isEmpty) {
       throw Exception('Unshare failed — no rows affected (check permissions)');
     }
+
+    await _notificationService.removeToggleNotification(
+      postId: postId,
+      type: 'share',
+      actorId: userId,
+    );
   }
 
   Future<bool> isPostSharedByCurrentUser(String postId) async {

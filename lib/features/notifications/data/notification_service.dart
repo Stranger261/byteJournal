@@ -19,18 +19,20 @@ class NotificationService {
 
     if (recipientId == actorId) return; // don't notify yourself
 
-    if (type == 'like') {
+    // For toggleable interactions (like/share), only ever keep ONE active
+    // notification per actor+post+type combination — never stack duplicates.
+    if (type == 'like' || type == 'share') {
       final existing = await _client
           .from('notifications')
           .select('id')
           .eq('recipient_id', recipientId)
           .eq('actor_id', actorId)
           .eq('post_id', postId)
-          .eq('type', 'like')
+          .eq('type', type)
           .maybeSingle();
 
       if (existing != null)
-        return; // already notified for this like relationship
+        return; // already have an active one, don't duplicate
     }
 
     await _client.from('notifications').insert({
@@ -40,6 +42,20 @@ class NotificationService {
       'post_id': postId,
       'comment_id': commentId,
     });
+  }
+
+  /// Call this when the actor UNDOES a toggleable interaction (unlike/unshare).
+  Future<void> removeToggleNotification({
+    required String postId,
+    required String type,
+    required String actorId,
+  }) async {
+    await _client
+        .from('notifications')
+        .delete()
+        .eq('actor_id', actorId)
+        .eq('post_id', postId)
+        .eq('type', type);
   }
 
   Future<List<NotificationModel>> getNotifications({

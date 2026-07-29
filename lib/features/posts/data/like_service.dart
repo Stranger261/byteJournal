@@ -30,6 +30,12 @@ class LikeService {
         .delete()
         .eq('post_id', postId)
         .eq('user_id', userId);
+
+    await _notificationService.removeToggleNotification(
+      postId: postId,
+      type: 'like',
+      actorId: userId,
+    );
   }
 
   Future<bool> isPostLikedByCurrentUser(String postId) async {
