@@ -30,7 +30,7 @@ class MySharesProvider extends ChangeNotifier {
         updatePostLocally(updated);
       }
     } else {
-      removePostLocally(event.postId);
+      removePostLocally(event.postId!);
     }
   }
 

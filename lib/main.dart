@@ -1,4 +1,5 @@
 import 'package:blog_app/core/router/app_router.dart';
+import 'package:blog_app/core/services/post_realtime_service.dart';
 import 'package:blog_app/core/services/post_sync_service.dart';
 import 'package:blog_app/core/services/push_notification_service.dart';
 import 'package:blog_app/core/theme/app_theme.dart';
@@ -20,8 +21,6 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Must be registered before runApp — handles pushes received while the
-  // app is fully terminated.
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
@@ -29,8 +28,10 @@ void main() async {
 
   await Supabase.initialize(url: supabaseUrl, publishableKey: supabaseKey);
 
+  final postSyncService = PostSyncService();
   final notificationsProvider = NotificationsProvider();
   final pushNotificationService = PushNotificationService();
+  final postRealtimeService = PostRealtimeService(syncService: postSyncService);
 
   Supabase.instance.client.auth.onAuthStateChange.listen((data) {
     switch (data.event) {
@@ -43,11 +44,13 @@ void main() async {
           ..loadInitial()
           ..subscribeToRealtime();
         pushNotificationService.initialize();
+        postRealtimeService.start();
         break;
       case AuthChangeEvent.signedOut:
         notificationsProvider.unsubscribeFromRealtime();
         notificationsProvider.clear();
         pushNotificationService.removeCurrentToken();
+        postRealtimeService.stop();
         break;
       default:
         break;
@@ -59,7 +62,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider(create: (_) => ThemeController()),
-        ChangeNotifierProvider(create: (_) => PostSyncService()),
+        ChangeNotifierProvider.value(value: postSyncService),
         ChangeNotifierProvider.value(value: notificationsProvider),
       ],
       child: const ByteJorunalApp(),

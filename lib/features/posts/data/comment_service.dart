@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:blog_app/features/notifications/data/notification_service.dart';
 import 'package:blog_app/features/posts/data/post_model.dart';
 import 'package:image_picker/image_picker.dart';
@@ -64,8 +62,8 @@ class CommentService {
         final file = images[i];
         final ext = file.path.split('.').last;
         final path = '$userId/comments/$commentId/${uuid.v4()}.$ext';
-
-        await _client.storage.from('post-images').upload(path, File(file.path));
+        final bytes = await file.readAsBytes();
+        await _client.storage.from('post-images').uploadBinary(path, bytes);
 
         await _client.from('comment_images').insert({
           'comment_id': commentId,
@@ -147,7 +145,8 @@ class CommentService {
       for (final file in newImages) {
         final ext = file.path.split('.').last;
         final path = '${user.id}/comments/$commentId/${uuid.v4()}.$ext';
-        await _client.storage.from('post-images').upload(path, File(file.path));
+        final bytes = await file.readAsBytes();
+        await _client.storage.from('post-images').uploadBinary(path, bytes);
         await _client.from('comment_images').insert({
           'comment_id': commentId,
           'storage_path': path,

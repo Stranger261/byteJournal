@@ -26,7 +26,7 @@ class MyPostsProvider extends ChangeNotifier {
     if (event.action == PostSyncAction.updated) {
       updatePostLocally(event.post!);
     } else {
-      removePostLocally(event.postId);
+      removePostLocally(event.postId!);
     }
   }
 

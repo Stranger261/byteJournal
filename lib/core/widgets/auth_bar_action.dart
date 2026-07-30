@@ -21,23 +21,33 @@ class AuthBarAction extends StatelessWidget {
       );
     }
 
-    final name = auth.profile?.name ?? '';
+    final profile = auth.profile;
+    final name = profile?.name ?? '';
     final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
-    final avatarUrl = auth.profile?.avatarUrl;
+
+    final avatarUrl = profile?.avatarUrl;
+    final hasAvatar = avatarUrl != null && avatarUrl.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.only(right: 4),
       child: GestureDetector(
-        onTap: () => Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => ProfilePage())),
+        onTap: () async {
+          await Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const ProfilePage()));
+
+          // Refresh after returning from ProfilePage
+          await context.read<AuthController>().refreshProfile();
+        },
         child: CircleAvatar(
           radius: 16,
           backgroundColor: c.surfaceAlt,
-          backgroundImage: (avatarUrl?.isNotEmpty ?? false)
-              ? NetworkImage(avatarUrl!)
+          backgroundImage: hasAvatar
+              ? NetworkImage(
+                  '$avatarUrl?v=${DateTime.now().millisecondsSinceEpoch}',
+                )
               : null,
-          child: (avatarUrl?.isNotEmpty ?? false)
+          child: hasAvatar
               ? null
               : Text(initial, style: TextStyle(fontSize: 12, color: c.text)),
         ),

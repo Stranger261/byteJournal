@@ -1,19 +1,18 @@
-import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PostImageTile extends StatelessWidget {
   final String? networkUrl;
-  final File? localFile;
+  final XFile? localXFile;
   final VoidCallback onRemove;
 
   const PostImageTile({
     super.key,
-    this.localFile,
     this.networkUrl,
+    this.localXFile,
     required this.onRemove,
-  }) : assert(networkUrl != null || localFile != null);
+  }) : assert(networkUrl != null || localXFile != null);
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +23,18 @@ class PostImageTile extends StatelessWidget {
           child: SizedBox(
             width: 90,
             height: 90,
-            child: localFile != null
-                ? Image.file(localFile!, fit: BoxFit.cover)
+            child: localXFile != null
+                ? FutureBuilder<Uint8List>(
+                    future: localXFile!.readAsBytes(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return Container(
+                          color: Colors.grey.withValues(alpha: .15),
+                        );
+                      }
+                      return Image.memory(snapshot.data!, fit: BoxFit.cover);
+                    },
+                  )
                 : Image.network(networkUrl!, fit: BoxFit.cover),
           ),
         ),
@@ -35,7 +44,7 @@ class PostImageTile extends StatelessWidget {
           child: GestureDetector(
             onTap: onRemove,
             child: Container(
-              padding: EdgeInsets.all(3),
+              padding: const EdgeInsets.all(3),
               decoration: const BoxDecoration(
                 color: Colors.black87,
                 shape: BoxShape.circle,

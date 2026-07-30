@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:blog_app/features/auth/data/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,8 +22,11 @@ class ProfileService {
         .eq('id', userId);
   }
 
-  Future<String> uploadAvatar(String userId, File file) async {
-    final ext = file.path.split('.').last;
+  Future<String> uploadAvatar(
+    String userId,
+    Uint8List bytes,
+    String ext,
+  ) async {
     final path = '$userId/avatar.$ext';
 
     final existing = await _supabase.storage.from('avatars').list(path: userId);
@@ -37,7 +40,11 @@ class ProfileService {
 
     await _supabase.storage
         .from('avatars')
-        .upload(path, file, fileOptions: const FileOptions(upsert: true));
+        .uploadBinary(
+          path,
+          bytes,
+          fileOptions: const FileOptions(upsert: true),
+        );
 
     final baseUrl = _supabase.storage.from('avatars').getPublicUrl(path);
     final url = '$baseUrl?updated=${DateTime.now().millisecondsSinceEpoch}';

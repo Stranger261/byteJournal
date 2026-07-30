@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:blog_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -43,11 +42,23 @@ class CommentInput extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        File(e.value.path),
+                      child: SizedBox(
                         width: 64,
                         height: 64,
-                        fit: BoxFit.cover,
+                        child: FutureBuilder<Uint8List>(
+                          future: e.value.readAsBytes(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return Container(
+                                color: Colors.grey.withOpacity(0.15),
+                              );
+                            }
+                            return Image.memory(
+                              snapshot.data!,
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        ),
                       ),
                     ),
                     Positioned(

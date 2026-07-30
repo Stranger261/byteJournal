@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:blog_app/core/theme/app_theme.dart';
 import 'package:blog_app/core/utils/toast.dart';
 import 'package:blog_app/core/widgets/back_to_homescreen_button.dart';
@@ -106,7 +105,7 @@ class _UpdatePostView extends StatelessWidget {
                           ...provider.newImages.asMap().entries.map(
                             (e) => PostImageTile(
                               key: ValueKey('new-${e.value.path}'),
-                              localFile: File(e.value.path),
+                              localXFile: e.value,
                               onRemove: () => context
                                   .read<UpdatePostProvider>()
                                   .removeNewImageAt(e.key),

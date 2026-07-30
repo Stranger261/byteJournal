@@ -1,4 +1,5 @@
 import 'package:blog_app/core/router/app_router.dart';
+import 'package:blog_app/core/services/post_sync_service.dart';
 import 'package:blog_app/core/theme/app_theme.dart';
 import 'package:blog_app/core/widgets/back_to_homescreen_button.dart';
 import 'package:blog_app/core/widgets/loading_submit_button.dart';
@@ -19,7 +20,9 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final userId = Supabase.instance.client.auth.currentUser?.id ?? '';
     return ChangeNotifierProvider(
-      create: (_) => ProfileProvider()..load(userId),
+      create: (context) =>
+          ProfileProvider(syncService: context.read<PostSyncService>())
+            ..load(userId),
       child: const _ProfileView(),
     );
   }

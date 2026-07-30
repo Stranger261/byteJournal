@@ -1,11 +1,14 @@
-import 'dart:io';
-
+import 'dart:typed_data';
+import 'package:blog_app/core/services/post_sync_service.dart';
 import 'package:blog_app/features/profile/data/profile_service.dart';
 import 'package:blog_app/features/auth/data/user_model.dart';
 import 'package:flutter/material.dart';
 
 class ProfileProvider extends ChangeNotifier {
   final _profileService = ProfileService();
+  final PostSyncService? syncService;
+
+  ProfileProvider({this.syncService});
 
   UserModel? profile;
   bool isLoading = false;
@@ -41,12 +44,13 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> updateAvatar(String userId, File file) async {
+  Future<bool> updateAvatar(String userId, Uint8List bytes, String ext) async {
     isSaving = true;
     notifyListeners();
     try {
-      await _profileService.uploadAvatar(userId, file);
+      final url = await _profileService.uploadAvatar(userId, bytes, ext);
       await load(userId);
+      syncService?.notifyProfileUpdated(userId, avatarUrl: url);
       return true;
     } catch (e) {
       error = e.toString();
@@ -63,6 +67,7 @@ class ProfileProvider extends ChangeNotifier {
     try {
       await _profileService.deleteAvatar(userId);
       await load(userId);
+      syncService?.notifyProfileUpdated(userId, avatarUrl: null);
       return true;
     } catch (e) {
       error = e.toString();

@@ -30,6 +30,8 @@ class PostModel {
     this.isSharedByCurrentUser = false,
   });
 
+  static const _unset = Object();
+
   factory PostModel.fromMap(Map<String, dynamic> map) {
     final profile = map['profiles'] as Map<String, dynamic>?;
 
@@ -70,14 +72,18 @@ class PostModel {
     int? shareCount,
     bool? isLikedByCurrentUser,
     bool? isSharedByCurrentUser,
+    String? authorName,
+    Object? authorAvatarUrl = _unset,
   }) {
     return PostModel(
       id: id,
       userId: userId,
       content: content ?? this.content,
       createdAt: createdAt,
-      authorName: authorName,
-      authorAvatarUrl: authorAvatarUrl,
+      authorName: authorName ?? this.authorName,
+      authorAvatarUrl: identical(authorAvatarUrl, _unset)
+          ? this.authorAvatarUrl
+          : authorAvatarUrl as String?,
       images: images,
       likeCount: likeCount ?? this.likeCount,
       commentCount: commentCount ?? this.commentCount,

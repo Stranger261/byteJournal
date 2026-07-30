@@ -22,11 +22,29 @@ class FeedProvider extends ChangeNotifier {
     final event = _syncService.lastEvent;
     if (event == null) return;
 
-    if (event.action == PostSyncAction.updated) {
-      updatePostLocally(event.post!);
-    } else {
-      removePostLocally(event.postId);
+    switch (event.action) {
+      case PostSyncAction.updated:
+        updatePostLocally(event.post!);
+        break;
+      case PostSyncAction.deleted:
+        removePostLocally(event.postId!);
+        break;
+      case PostSyncAction.profileUpdated:
+        _patchAuthor(event.authorId!, event.authorName, event.authorAvatarUrl);
+        break;
     }
+  }
+
+  void _patchAuthor(String userId, String? name, String? avatarUrl) {
+    var changed = false;
+    for (var i = 0; i < _posts.length; i++) {
+      final p = _posts[i];
+      if (p.userId == userId) {
+        _posts[i] = p.copyWith(authorName: name, authorAvatarUrl: avatarUrl);
+        changed = true;
+      }
+    }
+    if (changed) notifyListeners();
   }
 
   final List<PostModel> _posts = [];

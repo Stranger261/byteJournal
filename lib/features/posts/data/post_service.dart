@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:blog_app/features/posts/data/post_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -45,8 +43,9 @@ class PostService {
       final file = images[i];
       final ext = file.path.split('.').last;
       final path = '$userId/$postId/${uuid.v4()}.$ext';
+      final bytes = await file.readAsBytes();
 
-      await _client.storage.from('post-images').upload(path, File(file.path));
+      await _client.storage.from('post-images').uploadBinary(path, bytes);
 
       await _client.from('post_images').insert({
         'post_id': postId,
@@ -218,7 +217,10 @@ class PostService {
       final file = images[i];
       final ext = file.path.split('.').last;
       final path = '$userId/$postId/${uuid.v4()}.$ext';
-      await _client.storage.from('post-images').upload(path, File(file.path));
+      final bytes = await file.readAsBytes();
+
+      await _client.storage.from('post-images').uploadBinary(path, bytes);
+
       await _client.from('post_images').insert({
         'post_id': postId,
         'storage_path': path,

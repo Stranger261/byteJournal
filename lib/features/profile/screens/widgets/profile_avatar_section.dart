@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:blog_app/core/theme/app_theme.dart';
 import 'package:blog_app/core/widgets/image_view_page.dart';
 import 'package:blog_app/features/auth/screens/controllers/auth_controller.dart';
@@ -30,9 +29,13 @@ class ProfileAvatarSection extends StatelessWidget {
     );
     if (picked == null || !context.mounted) return;
 
+    final bytes = await picked.readAsBytes();
+    final ext = picked.path.split('.').last;
+
     final success = await context.read<ProfileProvider>().updateAvatar(
       userId,
-      File(picked.path),
+      bytes,
+      ext,
     );
     if (success && context.mounted) {
       await context.read<AuthController>().refreshProfile();
